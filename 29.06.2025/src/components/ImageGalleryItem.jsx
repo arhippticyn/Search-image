@@ -1,12 +1,13 @@
 import React from "react";
+import styles from '../styles/ImageGalleryItem.module.css'
 
 
 class ImageGalleryitem extends React.Component {
     render() {
         const { id, webformatURL} = this.props
         return (
-            <li key={id} className='ImageGalleryItem'>
-             <img className="ImageGalleryItem-image" src={webformatURL} alt="image" />
+            <li key={id} className={styles.ImageGalleryItem}>
+             <img className={styles.ImageGalleryItemImage} src={webformatURL} alt="image" />
             </li>
         )
     }

@@ -1,15 +1,18 @@
 import React from "react";
 import ImageGalleryitem from "./ImageGalleryItem";
+import styles from "../styles/ImageGallery.module.css"
+import Button from "./Button";
 
 
 class ImageGallery extends React.Component {
     render() {
         const { images } = this.props
         return (
-            <ul classname="ImageGallery">
+            <ul className={styles.ImageGallery}>
                 {images.map(({id, webformatURL}) => (
-                    <ImageGalleryitem id={id} webformatURL={webformatURL} />
+                    <ImageGalleryitem key={id} id={id} webformatURL={webformatURL} />
                 ))}
+
             </ul>
         )
     }
