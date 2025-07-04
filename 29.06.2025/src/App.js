@@ -5,6 +5,7 @@ import Searchbar from './components/Searchbar';
 import axios from "axios";
 import ImageGallery from './components/ImageGallery';
 import Button from './components/Button';
+import Loader from './components/Loader';
 
 axios.defaults.baseURL = "https://pixabay.com/api"
 
@@ -12,23 +13,36 @@ class App extends React.Component {
   state = {
     images: [],
     page: 1,
-    value: ''
+    value: '',
+    isLoading: false,
+    showImage: false,
+    modalImage: ''
   }
 
-  handleSubmit = async (value) => {
-    this.setState({value, page: 1, images: []})
 
-    try {
-      const response = await axios.get(`/?q=${value}&page=1&key=51105397-aef3055b6813d883a5d382b16&image_type=photo&orientation=horizontal&per_page=12`)
-      this.setState({images: response.data.hits})
-    }
-    catch {
-      console.log(Error);
-    }
+  handleImageClick = (largeImageURL) => {
+    this.setState({showImage: true, modalImage: largeImageURL})
   }
+
+handleSubmit = async (value) => {
+  this.setState({ value, page: 1, images: [], isLoading: true });
+
+  try {
+    const response = await axios.get(
+      `/?q=${value}&page=1&key=51105397-aef3055b6813d883a5d382b16&image_type=photo&orientation=horizontal&per_page=12`
+    );
+    this.setState({ images: response.data.hits });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  } finally {
+    this.setState({ isLoading: false });
+  }
+};
+
 
   loadMore = async () => {
       const nextPage = this.state.page + 1
+      this.setState({ isLoading: true})
     try {
       const response = await axios.get(`/?q=${this.state.value}&page=${nextPage}&key=51105397-aef3055b6813d883a5d382b16&image_type=photo&orientation=horizontal&per_page=12`)
     
@@ -41,6 +55,10 @@ class App extends React.Component {
     catch {
       console.log(Error)
     }
+finally {
+    this.setState({ isLoading: false });
+  }
+
   }
 
 
@@ -49,7 +67,10 @@ class App extends React.Component {
     <div className="App">
       <Searchbar onSubmit={this.handleSubmit} />
 
-      <ImageGallery images={this.state.images} />
+
+      {this.state.isLoading && <Loader /> }
+      
+<ImageGallery images={this.state.images} />
 
       {this.state.images.length > 0 && (
         <Button onClick={this.loadMore} />
