@@ -5,11 +5,10 @@ import Modal from "./Modal";
 
 class ImageGalleryitem extends React.Component {
     render() {
-        const { id, webformatURL} = this.props
+        const { id, webformatURL, largeImageURL, onImageClick} = this.props
         return (
-            <li key={id} className={styles.ImageGalleryItem}>
+            <li key={id} className={styles.ImageGalleryItem} onClick={() => onImageClick(largeImageURL)}>
              <img className={styles.ImageGalleryItemImage} src={webformatURL} alt="image" />
-             <Modal image={webformatURL} />
             </li>
         )
     }

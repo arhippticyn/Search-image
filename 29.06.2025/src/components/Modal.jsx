@@ -8,7 +8,7 @@ export default class Modal extends React.Component {
     } 
 
     componentWillUnmount() {
-        window.removeEventListener('keydown', this.handleOverlayClick)
+        window.removeEventListener('keydown', this.handleKeyDown)
     }
 
 
