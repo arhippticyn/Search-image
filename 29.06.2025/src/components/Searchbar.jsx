@@ -1,45 +1,40 @@
-import React from "react";
-import styles from "../styles/Searchbar.module.css"
+import React, { useState, useCallback } from "react";
+import styles from "../styles/Searchbar.module.css";
 
-class Searchbar extends React.Component {
-   state = {
-    value: ''
-   } 
+const Searchbar = ({ onSubmit }) => {
+  const [value, setValue] = useState('');
 
+  const handleChange = useCallback((e) => {
+    setValue(e.target.value);
+  }, []);
 
-   handleChange = e => {
-    this.setState({value: e.target.value})
-   }
+  const handleSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      onSubmit(value);
+      setValue('');
+    },
+    [onSubmit, value]
+  );
 
-   handleSubmit = e => {
-    e.preventDefault()
+  return (
+    <header className={styles.Searchbar}>
+      <form className={styles.SearchForm} onSubmit={handleSubmit}>
+        <button type="submit" className={styles.SearchFormButton}>
+          <span className={styles.SearchFormButtonLabel}>Search</span>
+        </button>
+        <input
+          className={styles.SearchFormInput}
+          type="text"
+          autoComplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+          value={value}
+          onChange={handleChange}
+        />
+      </form>
+    </header>
+  );
+};
 
-    this.props.onSubmit(this.state.value)
-    this.setState({value: ''})
-   }
- 
-
-  render() {
-    return (
-        <header className={styles.Searchbar}>
-  <form className={styles.SearchForm}  onSubmit={this.handleSubmit}>
-    <button type="submit" className={styles.SearchFormButton}>
-      <span className={styles.SearchFormButtonLabel}>Search</span>
-    </button>
-    <input
-      className={styles.SearchFormInput}
-      type="text"
-autoComplete="off"
-            autoFocus
-      placeholder="Search images and photos"
-      value={this.state.value}
-            onChange={this.handleChange}
-    />
-  </form>
-</header>
-    )
-  }
-}
-
-
-export default Searchbar
+export default Searchbar;

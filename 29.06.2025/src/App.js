@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Searchbar from './components/Searchbar';
@@ -10,91 +10,84 @@ import Modal from './components/Modal';
 
 axios.defaults.baseURL = "https://pixabay.com/api"
 
-class App extends React.Component {
-  state = {
-    images: [],
-    page: 1,
-    value: '',
-    isLoading: false,
-    showModal: false,
-    modalImage: ''
-  }
+const App = () => {
+  const [images, setImages] = useState([])
+  const [page, setPage] = useState(1)
+  const [value, setValue] = useState('')
+  const [isLoading, setIsloading] = useState(false)
+  const [showModal, setShowModal] = useState(false)
+  const [ModalImage, setModalImage] = useState('')
 
-
-handleImageClick = (largeImageURL) => {
+const handleImageClick = useCallback((largeImageURL) => {
   setTimeout(() => {
-    this.setState({ showModal: true, modalImage: largeImageURL });
+    setShowModal(true)
+    setModalImage(largeImageURL)
   }, 0);
-};
+}, [])
 
-
-  closeModal = () => {
-    this.setState({showModal: false, modalImage: ''})
+  const closeModal = () => {
+    setShowModal(false)
+    setModalImage('')
   }
 
-handleSubmit = async (value) => {
-  this.setState({ value, page: 1, images: [], isLoading: true });
+const handleSubmit = useCallback(async (value) => {
+  setValue(value)
+  setPage(1)
+  setImages([])
+  setIsloading(true)
 
   try {
     const response = await axios.get(
       `/?q=${value}&page=1&key=51105397-aef3055b6813d883a5d382b16&image_type=photo&orientation=horizontal&per_page=12`
     );
-    this.setState({ images: response.data.hits });
+    setImages(response.data.hits)
   } catch (error) {
     console.error("Error fetching data:", error);
   } finally {
-    this.setState({ isLoading: false });
+    setIsloading(false)
   }
-};
+}, [])
 
-
-  loadMore = async () => {
-      const nextPage = this.state.page + 1
-      this.setState({ isLoading: true})
+const loadMore = useCallback(async () => {
+      const nextPage = setPage(page + 1)
+      setIsloading(true)
     try {
       const response = await axios.get(`/?q=${this.state.value}&page=${nextPage}&key=51105397-aef3055b6813d883a5d382b16&image_type=photo&orientation=horizontal&per_page=12`)
-    
-    this.setState(prevState => ({
-      images: [...prevState.images, ...response.data.hits],
-      page: nextPage
-    }))
+
+    setImages(prev => [...prev, ...response.data.hits])
+    setPage(nextPage)
     }
     
     catch {
       console.log(Error)
     }
-finally {
-    this.setState({ isLoading: false });
-  }
+    finally {
+    setIsloading(false)
+  }}, [])
 
-  }
-
-
-  render() {
-
-      if (!Array.isArray(this.state.images)) {
+  if (!Array.isArray(images)) {
     return null; 
   }
       return (
     <div className="App">
-      <Searchbar onSubmit={this.handleSubmit} />
+      <Searchbar onSubmit={handleSubmit} />
 
 
-      {this.state.isLoading && <Loader /> }
+      {isLoading && <Loader /> }
       
-<ImageGallery images={this.state.images} onImageClick={this.handleImageClick} />
+<ImageGallery images={images} onImageClick={handleImageClick} />
 
-{this.state.showModal && (
-  <Modal image={this.state.modalImage} onClose={this.closeModal} />
-)}
+{showModal && <Modal image={ModalImage} onClose={closeModal} />}
 
-      {this.state.images.length > 0 && (
-        <Button onClick={this.loadMore} />
+
+      {images.length > 0 && (
+        <Button onClick={loadMore} />
       )}
 
     </div>
   );
-  }
 }
+
+
 
 export default App;

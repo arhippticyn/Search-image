@@ -1,10 +1,8 @@
 import React from 'react';
 import { InfinitySpin } from 'react-loader-spinner' 
 
-export default class Loader extends React.Component {
-    
-    render() {
-        return (
+const loader = () => {
+     return (
             <div>
                 <InfinitySpin
                 width='100'
@@ -15,5 +13,6 @@ export default class Loader extends React.Component {
                 wrapperClass />
             </div>
         );
-    }
 }
+
+export default loader
